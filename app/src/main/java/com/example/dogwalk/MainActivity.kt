@@ -18,6 +18,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import androidx.compose.material3.TopAppBar
 import com.example.dogwalk.NewActivityScreen
+import androidx.compose.ui.platform.LocalContext
+
 
 
 
@@ -42,11 +44,34 @@ fun MainApp() {
             TopAppBar(
                 title = { Text("DogWalk") },
                 actions = {
-                    IconButton(onClick = { /* TODO: przejście do ustawień */ }) {
-                        Icon(Icons.Default.Settings, contentDescription = "Ustawienia")
+                    var expanded by remember { mutableStateOf(false) }
+
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+                    }
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Ustawienia") },
+                            onClick = {
+                                expanded = false
+                                // TODO: przejście do ustawień
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("O aplikacji") },
+                            onClick = {
+                                expanded = false
+                                // np. pokazanie okna dialogowego albo nic :)
+                            }
+                        )
                     }
                 }
             )
+
         },
         bottomBar = {
             BottomNavigationBar(navController)
@@ -59,6 +84,10 @@ fun MainApp() {
         ) {
             composable("home") { HomeScreen() }
             composable("new_activity") { NewActivityScreen() }
+            composable("calendar") {
+                val activity = LocalContext.current as ComponentActivity
+                CalendarScreen(activity)
+            }
         }
     }
 }
@@ -89,8 +118,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         )
         NavigationBarItem(
             icon = { Icon(Icons.Filled.CalendarToday, contentDescription = "Kalendarz") },
-            selected = false,
-            onClick = { /* TODO: dodaj ekran kalendarza */ }
+            selected = currentRoute(navController) == "calendar",
+            onClick = { navController.navigate("calendar") }
         )
     }
 }
