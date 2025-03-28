@@ -28,7 +28,20 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DogWalkTheme {
-                MainApp()
+                DogWalkTheme {
+                    val navController = rememberNavController()
+                    NavHost(
+                        navController = navController,
+                        startDestination = "login"
+                    ) {
+                        composable("login") {
+                            LoginScreen(navController)
+                        }
+                        composable("main") {
+                            MainScreen() // <== nowa nazwa dla tego, co masz jako MainApp()
+                        }
+                    }
+                }
             }
         }
     }
@@ -36,7 +49,7 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainApp() {
+fun MainScreen() {
     val navController = rememberNavController()
 
     Scaffold(
