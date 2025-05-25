@@ -1,9 +1,6 @@
-package com.example.dogwalk.ui
+package com.example.dogwalk
 
 import com.example.dogwalk.ui.theme.DogWalkTheme
-import androidx.compose.material.icons.filled.CalendarToday
-
-
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,14 +10,19 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
-import androidx.compose.material3.TopAppBar
-import com.example.dogwalk.NewActivityScreen
-import androidx.compose.ui.platform.LocalContext
-
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.maps.model.LatLng
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.dogwalk.WalkViewModel
+import com.example.dogwalk.MapScreen
+import com.example.dogwalk.ui.feed.ActivityFeed
+import com.example.dogwalk.ui.walk.NewWalkSummaryScreen
+import com.example.dogwalk.ui.walk.NewActivityScreen
+import com.example.dogwalk.ui.settings.*
 
 
 class MainActivity : ComponentActivity() {
@@ -28,19 +30,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DogWalkTheme {
-                DogWalkTheme {
-                    val navController = rememberNavController()
-                    NavHost(
-                        navController = navController,
-                        startDestination = "login"
-                    ) {
-                        composable("login") {
-                            LoginScreen(navController)
-                        }
-                        composable("main") {
-                            MainScreen() // <== nowa nazwa dla tego, co masz jako MainApp()
-                        }
-                    }
+                val navController = rememberNavController()
+                NavHost(
+                    navController = navController,
+                    startDestination = "splash"
+                ) {
+                    composable("splash") { SplashScreen(navController) }
+                    composable("login") { LoginScreen(navController) }
+                    composable("main") { MainScreen() }
+
                 }
             }
         }
@@ -68,23 +66,30 @@ fun MainScreen() {
                         onDismissRequest = { expanded = false }
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Ustawienia") },
+                            text = { Text("Motyw") },
                             onClick = {
                                 expanded = false
-                                // TODO: przejście do ustawień
+                                navController.navigate("theme_settings")
                             }
                         )
                         DropdownMenuItem(
-                            text = { Text("O aplikacji") },
+                            text = { Text("Dodaj zwierzaka") },
                             onClick = {
                                 expanded = false
-                                // np. pokazanie okna dialogowego albo nic :)
+                                navController.navigate("add_pet")
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Dodaj przyjaciela") },
+                            onClick = {
+                                expanded = false
+                                navController.navigate("add_friend")
                             }
                         )
                     }
+
                 }
             )
-
         },
         bottomBar = {
             BottomNavigationBar(navController)
@@ -96,25 +101,50 @@ fun MainScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("home") { HomeScreen() }
-            composable("new_activity") { NewActivityScreen() }
+            composable("new_activity") { NewActivityScreen(navController) }
+            composable("walk_summary") {
+                NewWalkSummaryScreen(navController)
+            }
             composable("calendar") {
                 val activity = LocalContext.current as ComponentActivity
                 CalendarScreen(activity)
             }
+            composable("map_screen") {
+                val walkViewModel: WalkViewModel = viewModel()
+                MapScreen(route = walkViewModel.currentRoute)
+            }
+            //zebatka ustawienia
+            composable("theme_settings") { ThemeSettingsScreen() }
+            composable("add_pet") { AddPetScreen(navController) }
+            composable("add_friend") { AddFriendScreen(navController) }
+
         }
     }
 }
 
 @Composable
-fun HomeScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text("Witaj w DogWalk!")
+fun HomeScreen(navController: NavHostController = rememberNavController()) {
+    val walkViewModel: WalkViewModel = viewModel()
+    val walks = walkViewModel.walkList
+
+    var visibleCount by remember { mutableStateOf(15) }
+
+    LaunchedEffect(Unit) {
+        walkViewModel.loadWalks()
     }
+
+    ActivityFeed(
+        walks = walks.take(visibleCount),
+        onClick = { walk ->
+            // TODO: przejście do szczegółów aktywności
+        },
+        onLoadMore = {
+            visibleCount += 15
+        }
+    )
 }
+
+
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {

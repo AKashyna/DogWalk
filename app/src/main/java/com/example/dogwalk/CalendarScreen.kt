@@ -1,6 +1,6 @@
 // CalendarScreen.kt
 
-package com.example.dogwalk.ui
+package com.example.dogwalk
 
 import android.Manifest
 import android.content.Context

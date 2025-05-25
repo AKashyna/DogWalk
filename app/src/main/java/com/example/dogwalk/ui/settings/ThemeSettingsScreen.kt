@@ -1,30 +1,23 @@
-package com.example.dogwalk
+package com.example.dogwalk.ui.settings
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.*
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.TopAppBar
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewActivityScreen() {
+fun ThemeSettingsScreen() {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Nowa Aktywność") }
-            )
-        }
+        topBar = { TopAppBar(title = { Text("Wybierz motyw") }) }
     ) { padding ->
         Column(
             modifier = Modifier
-                .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            Text("Tu będzie formularz dodawania nowej aktywności 🐾")
+            Text("Tu będą opcje wyboru motywu (jasny, ciemny, zielony, fioletowy)")
         }
     }
 }
