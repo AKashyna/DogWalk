@@ -15,7 +15,8 @@
 local.properties
 # Firebase config (do not commit)
 **/google-services.json
-**/google-services.json
 **/build/
 **/intermediates/
 **/generated/
+/app/build
+
