@@ -53,6 +53,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("io.github.vanpra.compose-material-dialogs:datetime:0.9.0")
     implementation(libs.play.services.location)
+    implementation(libs.androidx.navigation.runtime.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -74,6 +75,9 @@ dependencies {
     // Google Maps Compose
     implementation("com.google.maps.android:maps-compose:4.2.0")
     implementation("com.google.android.gms:play-services-maps:18.2.0")
+
+    implementation("androidx.datastore:datastore-preferences:1.1.0")
+
 
 
 

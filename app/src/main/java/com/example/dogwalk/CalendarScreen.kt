@@ -22,38 +22,55 @@ import java.time.LocalDate
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import com.example.dogwalk.ui.components.TopBarWithLogo
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavHostController
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalendarScreen(activity: Activity) {
+fun CalendarScreen(activity: Activity, navController: NavHostController) {
     val dialogState = rememberMaterialDialogState()
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
-
-        Text("Wybierz datę z kalendarza", style = MaterialTheme.typography.titleLarge)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = { dialogState.show() }) {
-            Text("Pokaż kalendarz")
+    Scaffold(
+        topBar = {
+            TopBarWithLogo(
+                title = "Kalendarz",
+                showMenu = true,
+                navController = navController,
+                onMenuItemClick = { route -> navController.navigate(route) }
+            )
         }
-
-        selectedDate?.let {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("Wybrana data: $it")
-        }
-
-        // Kalendarz
-        MaterialDialog(
-            dialogState = dialogState,
-            buttons = {
-                positiveButton("OK")
-                negativeButton("Anuluj")
-            }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp)
         ) {
-            datepicker { date ->
-                selectedDate = date
+            Text("Wybierz datę z kalendarza", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(onClick = { dialogState.show() }) {
+                Text("Pokaż kalendarz")
+            }
+
+            selectedDate?.let {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("Wybrana data: $it")
+            }
+
+            MaterialDialog(
+                dialogState = dialogState,
+                buttons = {
+                    positiveButton("OK")
+                    negativeButton("Anuluj")
+                }
+            ) {
+                datepicker { date ->
+                    selectedDate = date
+                }
             }
         }
     }

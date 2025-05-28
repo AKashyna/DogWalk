@@ -26,6 +26,8 @@ import com.example.dogwalk.WalkViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import kotlinx.coroutines.suspendCancellableCoroutine
+import com.example.dogwalk.ui.components.TopBarWithLogo
+
 
 
 @Parcelize
@@ -84,7 +86,14 @@ fun NewActivityScreen(navController: NavController) {
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Nowy spacer") }) }
+        topBar = {
+            TopBarWithLogo(
+                title = "Nowy spacer",
+                showMenu = true,
+                navController = navController,
+                onMenuItemClick = { route -> navController.navigate(route) }
+            )
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -107,8 +116,8 @@ fun NewActivityScreen(navController: NavController) {
                         val draft = WalkDraft(
                             route = route,
                             startTime = startTime ?: System.currentTimeMillis(),
-                            duration = timer / 60,
-                            distance = "%.2f".format(distance).toDouble()
+                            duration = maxOf(1, timer / 60),
+                            distance = (distance * 100).roundToInt() / 100.0
                         )
                         walkViewModel.currentRoute = route
                         navController.currentBackStackEntry?.savedStateHandle?.set("walkDraft", draft)

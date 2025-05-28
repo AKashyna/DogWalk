@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.Image
 import androidx.compose.ui.graphics.graphicsLayer
 import com.example.dogwalk.ui.login.PawTrail
+import com.google.firebase.firestore.SetOptions
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +72,7 @@ fun LoginScreen(navController: NavController) {
                         )
                         db.collection("users")
                             .document(it.uid)
-                            .set(userData)
+                            .set(userData, SetOptions.merge())
                             .addOnSuccessListener {
                                 Log.d("LOGIN", "Użytkownik zapisany w Firestore")
                             }
@@ -79,9 +80,10 @@ fun LoginScreen(navController: NavController) {
                                 Log.e("LOGIN", "Błąd zapisu użytkownika: ${e.localizedMessage}")
                             }
                     }
-                    navController.navigate("main") {
+                    navController.navigate("home") {
                         popUpTo("login") { inclusive = true }
                     }
+
                 }
 
             }

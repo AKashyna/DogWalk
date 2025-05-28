@@ -6,6 +6,9 @@ import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -15,15 +18,19 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import kotlinx.coroutines.tasks.await
+import com.example.dogwalk.ui.components.TopBarWithLogo
+import androidx.navigation.NavHostController
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapScreen(route: List<LatLng>) {
+fun MapScreen(route: List<LatLng>, navController: NavHostController) {
     val context = LocalContext.current
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean -> }
+    ) { /* do nothing */ }
 
     LaunchedEffect(Unit) {
         if (ContextCompat.checkSelfPermission(
@@ -65,16 +72,27 @@ fun MapScreen(route: List<LatLng>) {
         }
     }
 
-
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState,
-        properties = MapProperties(
-            isMyLocationEnabled = true
-        )
-    ) {
-        if (route.isNotEmpty()) {
-            Polyline(points = route)
+    Scaffold(
+        topBar = {
+            TopBarWithLogo(
+                title = "Mapa",
+                showBack = true,
+                showMenu = false,
+                navController = navController,
+                onMenuItemClick = {  }
+            )
+        }
+    ) { innerPadding ->
+        GoogleMap(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            cameraPositionState = cameraPositionState,
+            properties = MapProperties(isMyLocationEnabled = true)
+        ) {
+            if (route.isNotEmpty()) {
+                Polyline(points = route)
+            }
         }
     }
 }
